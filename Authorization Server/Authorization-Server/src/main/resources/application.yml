@@ -1,0 +1,26 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: Authorization-Server
+  authorization-server:
+    issuer-uri: http://localhost:8080
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/auth
+    username: postgres
+    password: postgres
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  session:
+    store-type: jdbc
+artificer:
+  auth:
+    keypass: 123456
+    storepass: 123456
+    alias: artificer
+    path: keystore/artificer.jks
