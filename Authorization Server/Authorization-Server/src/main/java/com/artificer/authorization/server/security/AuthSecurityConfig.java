@@ -1,15 +1,17 @@
 package com.artificer.authorization.server.security;
 
 import com.artificer.authorization.server.domain.UsuarioApiService;
+import com.artificer.authorization.server.keystore.MultiKeyStoreResolver;
+import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.config.Customizer;
@@ -21,6 +23,9 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationConsentService;
@@ -39,12 +44,17 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import java.io.InputStream;
 import java.security.KeyStore;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Configuration
 @EnableWebSecurity
 public class AuthSecurityConfig {
+
+    @Autowired
+    private MultiKeyStoreResolver keyStoreResolver;
 
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -54,7 +64,8 @@ public class AuthSecurityConfig {
         http.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
                 .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
                 .csrf(csrf -> csrf.ignoringRequestMatchers(authorizationServerConfigurer.getEndpointsMatcher()))
-                .with(authorizationServerConfigurer, configurer -> {});
+                .with(authorizationServerConfigurer, configurer -> {
+                });
         return http.formLogin(Customizer.withDefaults()).build();
     }
 
@@ -68,10 +79,24 @@ public class AuthSecurityConfig {
     @Bean
     public OAuth2TokenCustomizer<JwtEncodingContext> jwtEncodingContextOAuth2TokenCustomizer(UsuarioApiService usuarioApiService) {
         return (context -> {
+            RegisteredClient registeredClient = context.getRegisteredClient();
+            String clientId = registeredClient != null ? registeredClient.getClientId() : null;
+
+            if (clientId != null) {
+                String kid = clientId.replace("-web", "");
+                context.getJwsHeader().algorithm(SignatureAlgorithm.RS256);
+                context.getJwsHeader().keyId(kid);
+            }
+
             Authentication authentication = context.getPrincipal();
             if (authentication.getPrincipal() instanceof User) {
                 final User user = (User) authentication.getPrincipal();
                 var userEntity = usuarioApiService.buscarUsuario(user.getUsername());
+
+                if (clientId != null && !clientId.contains(userEntity.getNome())) {
+                    throw new OAuth2AuthenticationException(new OAuth2Error("invalid_request",
+                            "aud enviado não corresponde ao user_name", null));
+                }
 
                 Set<String> authorities = new HashSet<>();
 
@@ -138,23 +163,14 @@ public class AuthSecurityConfig {
                         .build())
                 .build();
 
-        var clientRepository = new JdbcRegisteredClientRepository(jdbcTemplate);
-//        clientRepository.save(clientCredentials);
-//        clientRepository.save(authCode);
-        return clientRepository;
+        return new JdbcRegisteredClientRepository(jdbcTemplate);
     }
 
     @Bean
     public JWKSet jwkSet(AuthProperties authProperties) throws Exception {
-        final String keyStore = authProperties.getPath();
-        final InputStream inputStream = new ClassPathResource(keyStore).getInputStream();
-        final KeyStore keyStore1 = KeyStore.getInstance("JKS");
-        keyStore1.load(inputStream, authProperties.getStorepass().toCharArray());
-        RSAKey rsaKey = RSAKey.load(keyStore1,
-                authProperties.getAlias(),
-                authProperties.getKeypass().toCharArray()
-        );
-        return new JWKSet(rsaKey);
+        List<RSAKey> all = keyStoreResolver.getAll();
+        List<JWK> jwkList = new ArrayList<>(all);
+        return new JWKSet(jwkList);
     }
 
     @Bean

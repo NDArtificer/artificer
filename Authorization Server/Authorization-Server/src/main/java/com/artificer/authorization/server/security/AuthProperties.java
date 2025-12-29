@@ -7,22 +7,32 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.Map;
+
 @Component
 @Validated
-@ConfigurationProperties(prefix = "artificer.auth")
+@ConfigurationProperties(prefix = "auths")
 @Getter
 @Setter
 public class AuthProperties {
 
-    @NotBlank
-    private String keypass;
+    private Map<String, ClientKeyStore> clients;
 
-    @NotBlank
-    private String storepass;
+    @Getter
+    @Setter
+    public static class ClientKeyStore {
+        @NotBlank
+        private String keypass;
 
-    @NotBlank
-    private String alias;
+        @NotBlank
+        private String storepass;
 
-    @NotBlank
-    private String path ;
+        @NotBlank
+        private String alias;
+
+        @NotBlank
+        private String path;
+
+
+    }
 }

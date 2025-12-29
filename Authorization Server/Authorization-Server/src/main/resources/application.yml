@@ -1,3 +1,10 @@
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
+    org.springframework.security.oauth2.server: DEBUG
+    org.springframework.security.oauth2.jwt: DEBUG
+    com.nimbusds: DEBUG
 server:
   port: 8080
 spring:
@@ -18,9 +25,20 @@ spring:
     locations: classpath:db/migration
   session:
     store-type: jdbc
-artificer:
-  auth:
-    keypass: 123456
-    storepass: 123456
-    alias: artificer
-    path: keystore/artificer.jks
+auths:
+  clients:
+    artificer:
+      keypass: 123456
+      storepass: 123456
+      alias: artificer
+      path: keystore/artificer.jks
+    matrix:
+      keypass: 123456
+      storepass: 123456
+      alias: matrix
+      path: keystore/matrix.jks
+    internal:
+      keypass: 123456
+      storepass: 123456
+      alias: internal
+      path: keystore/internal.jks
