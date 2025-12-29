@@ -42,8 +42,6 @@ import org.springframework.security.oauth2.server.authorization.token.JwtEncodin
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 
-import java.io.InputStream;
-import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -167,7 +165,7 @@ public class AuthSecurityConfig {
     }
 
     @Bean
-    public JWKSet jwkSet(AuthProperties authProperties) throws Exception {
+    public JWKSet jwkSet() {
         List<RSAKey> all = keyStoreResolver.getAll();
         List<JWK> jwkList = new ArrayList<>(all);
         return new JWKSet(jwkList);
