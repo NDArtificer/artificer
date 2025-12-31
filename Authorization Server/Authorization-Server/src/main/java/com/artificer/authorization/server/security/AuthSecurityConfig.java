@@ -18,7 +18,6 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -43,9 +42,9 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
@@ -60,7 +59,8 @@ public class AuthSecurityConfig {
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
 
         http.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
-                .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
+                .authorizeHttpRequests(authorize -> authorize
+                        .anyRequest().authenticated())
                 .csrf(csrf -> csrf.ignoringRequestMatchers(authorizationServerConfigurer.getEndpointsMatcher()))
                 .with(authorizationServerConfigurer, configurer -> {
                 });
@@ -70,7 +70,8 @@ public class AuthSecurityConfig {
     @Bean
     public SecurityFilterChain authSecurityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(
-                auth -> auth.anyRequest().authenticated());
+                auth -> auth
+                        .anyRequest().authenticated());
         return http.formLogin(Customizer.withDefaults()).build();
     }
 
@@ -96,11 +97,8 @@ public class AuthSecurityConfig {
                             "aud enviado não corresponde ao user_name", null));
                 }
 
-                Set<String> authorities = new HashSet<>();
-
-                for (GrantedAuthority authority : user.getAuthorities()) {
-                    authorities.add(authority.toString());
-                }
+                Set<String> authorities = user.getAuthorities().stream()
+                        .map(Object::toString).collect(Collectors.toSet());
 
                 context.getClaims().claim("user_id", userEntity.getId().toString());
                 context.getClaims().claim("user_name", userEntity.getNome());
@@ -138,7 +136,6 @@ public class AuthSecurityConfig {
                         .requireAuthorizationConsent(false)
                         .build())
                 .build();
-
 
         RegisteredClient authCode = RegisteredClient.withId("2")
                 .clientId("artificer-web")
