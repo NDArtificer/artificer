@@ -121,7 +121,7 @@ public class AuthSecurityConfig {
     }
 
     @Bean
-    public RegisteredClientRepository registredClientRepository(PasswordEncoder passwordEncoder, JdbcTemplate jdbcTemplate) {
+    public RegisteredClientRepository registeredClientRepository(PasswordEncoder passwordEncoder, JdbcTemplate jdbcTemplate) {
         RegisteredClient clientCredentials = RegisteredClient.withId("1")
                 .clientId("artificer")
                 .clientSecret(passwordEncoder.encode("123456"))

@@ -1,13 +1,14 @@
-package com.artificer.usuarios.exception.handler;
+package com.artificer.clientes.handler;
 
-import com.artificer.usuarios.domain.exception.NegocioException;
-import com.artificer.usuarios.domain.exception.UsuarioNaoEncontradaException;
+import com.artificer.clientes.domain.exception.ClienteNaoEncontradaException;
+import com.artificer.clientes.domain.exception.NegocioException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,11 +19,12 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.net.URI;
 import java.util.stream.Collectors;
 
-import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.*;
 
 @RestControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
-    public static final String URL = "https://usuarios.com/erros/";
+
+    public static final String URL = "https://clientes.com/erros/";
 
     @Autowired
     private MessageSource messageSource;
@@ -44,15 +46,15 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(NegocioException.class)
     public ProblemDetail handleNegocioException(NegocioException e) {
-        var problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        var problemDetail = ProblemDetail.forStatus(BAD_REQUEST);
         problemDetail.setTitle(e.getMessage());
         problemDetail.setType(URI.create("%sregra-de-negocio-violada".formatted(URL)));
         return problemDetail;
     }
 
-    @ExceptionHandler(UsuarioNaoEncontradaException.class)
+    @ExceptionHandler(ClienteNaoEncontradaException.class)
     public ProblemDetail handleEntidadeNaoEncontrada(NegocioException e) {
-        var problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+        var problemDetail = ProblemDetail.forStatus(NOT_FOUND);
         problemDetail.setTitle(e.getMessage());
         problemDetail.setType(URI.create("%srecurso-nao-encontrado".formatted(URL)));
         return problemDetail;
@@ -60,7 +62,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ProblemDetail handleDataIntegrityViolation(DataIntegrityViolationException e) {
-        var problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        var problemDetail = ProblemDetail.forStatus(CONFLICT);
         problemDetail.setTitle("Recurso a ser excluído está em uso!");
         problemDetail.setType(URI.create("%srecurso-em-uso".formatted(URL)));
         return problemDetail;

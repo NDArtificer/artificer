@@ -1,4 +1,4 @@
-package com.artificer.usuarios.security;
+package com.artificer.clientes.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +32,7 @@ public class SecurityConfig {
                                         jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
                                            .authenticationEntryPoint(new CustomAuthEntryPoint())
                 );
+
         return http.build();
     }
 
@@ -55,6 +56,7 @@ public class SecurityConfig {
                     return scopesAuthorities;
                 }
         );
+
         return converter;
     }
 }
