@@ -8,6 +8,8 @@ import com.artificer.pedidos.domain.model.Produto;
 import com.artificer.pedidos.domain.repository.ProdutoRepository;
 import com.artificer.pedidos.domain.service.ProdutoService;
 import com.artificer.pedidos.mapper.ProdutoMapper;
+import com.artificer.pedidos.security.CanEditProdutos;
+import com.artificer.pedidos.security.CanReadProdutos;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,6 +36,7 @@ public class ProdutoController {
     private ProdutoMapper produtoMapper;
 
     @GetMapping
+    @CanReadProdutos
     public ResponseEntity<CustomPage<ProdutoOutput>> listarProdutos(@PageableDefault Pageable pageable) {
         Page<Produto> produtosPage = produtoRepository.findAll(pageable);
         List<ProdutoOutput> modelList = produtoMapper.toModelList(produtosPage.getContent());
@@ -41,6 +44,7 @@ public class ProdutoController {
         return ResponseEntity.ok(customPage);
     }
 
+    @CanReadProdutos
     @GetMapping("/{produtoId}")
     public ResponseEntity<ProdutoOutput> buscarProduto(@PathVariable UUID produtoId) {
         Produto produto = produtoService.buscarOuFalhar(produtoId);
@@ -49,6 +53,7 @@ public class ProdutoController {
     }
 
     @PostMapping
+    @CanEditProdutos
     public ResponseEntity<ProdutoOutput> adicionarProduto(@RequestBody @Valid ProdutoInput produtoInput) {
         Produto novoProduto = produtoMapper.toEntity(produtoInput);
         novoProduto = produtoService.salvarProduto(novoProduto);
@@ -56,6 +61,7 @@ public class ProdutoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(produtoOutput);
     }
 
+    @CanEditProdutos
     @PutMapping("/{produtoId}")
     public ResponseEntity<ProdutoOutput> atualizarProduto(@PathVariable UUID produtoId, @RequestBody @Valid ProdutoInput produtoInput) {
         Produto produtoExistente = produtoService.buscarOuFalhar(produtoId);
@@ -64,6 +70,7 @@ public class ProdutoController {
         return ResponseEntity.ok(produtoOutput);
     }
 
+    @CanReadProdutos
     @DeleteMapping("/{produtoId}")
     public ResponseEntity<Void> deletarProduto(@PathVariable UUID produtoId) {
         Produto produto = produtoService.buscarOuFalhar(produtoId);
