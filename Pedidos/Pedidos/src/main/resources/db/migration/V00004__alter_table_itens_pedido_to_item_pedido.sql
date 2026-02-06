@@ -1,0 +1,1 @@
+ALTER TABLE itens_pedido RENAME TO item_pedido;

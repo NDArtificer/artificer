@@ -1,0 +1,35 @@
+server:
+  port: 8085
+spring:
+  application:
+    name: Pedidos
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8080/oauth2/jwks
+      client:
+        registration:
+          pedidos-client:
+            client-id: artificer
+            client-secret: 123456
+            authorization-grant-type: client_credentials
+            scope:
+              - clientes:read
+              - clientes:write
+            client-name: pedidos-client
+        provider:
+          pedidos-client:
+            token-uri: http://localhost:8080/oauth2/token
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/pedidos
+    username: postgres
+    password: postgres
+  flyway:
+    enabled: true
+    locations: classpath:db/migration/pedidos
+    ignore-missing-migrations: true

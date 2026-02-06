@@ -61,6 +61,13 @@ public class CilenteController {
         return ResponseEntity.ok(clientOutput);
     }
 
+    @CanReadClientes
+    @GetMapping("/email/{email}")
+    public ResponseEntity<ClientOutput> getClienteByEmail(@PathVariable String email) {
+        Cliente cliente = clientService.buscarPorEmail(email);
+        ClientOutput clientOutput = clienteMapper.toModel(cliente);
+        return ResponseEntity.ok(clientOutput);
+    }
 
     @CanEditClientes
     @PutMapping("/{clienteId}")

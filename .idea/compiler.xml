@@ -20,11 +20,10 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.38/lombok-1.18.38.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.38/lombok-1.18.38.jar" />
         </processorPath>
         <module name="Authorization-Server" />
       </profile>
-      <profile name="Annotation profile for clientes" enabled="true">
+      <profile name="Annotation profile for Pedidos" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -34,6 +33,7 @@
           <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct/1.6.3/mapstruct-1.6.3.jar" />
         </processorPath>
         <module name="clientes" />
+        <module name="pedidos" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -46,6 +46,7 @@
       <module name="Usuarios" options="-parameters" />
       <module name="artificer" options="-parameters" />
       <module name="clientes" options="-parameters" />
+      <module name="pedidos" options="-parameters" />
     </option>
   </component>
 </project>

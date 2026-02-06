@@ -28,3 +28,13 @@ WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'clientes')
 SELECT 'CREATE DATABASE clientes_test'
 WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'clientes_test')
 \gexec
+
+-- Cria o banco 'pedidos' se não existir
+SELECT 'CREATE DATABASE Pedidos'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'pedidos')
+\gexec
+
+-- Cria o banco 'pedidos' se não existir
+SELECT 'CREATE DATABASE pedidos_test'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'pedidos_test')
+\gexec
