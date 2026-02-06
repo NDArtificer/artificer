@@ -1,7 +1,5 @@
 package com.artificer.pedidos.api.model.output;
 
-import com.artificer.pedidos.domain.model.Cliente;
-import com.artificer.pedidos.domain.model.ItemPedido;
 import lombok.Getter;
 import lombok.Setter;
 

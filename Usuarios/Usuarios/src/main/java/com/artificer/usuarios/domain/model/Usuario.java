@@ -39,7 +39,7 @@ public class Usuario {
     }
 
     public enum Type {
-        ADMIN, CLIENT;
+        ADMIN, CLIENT
     }
 
 }

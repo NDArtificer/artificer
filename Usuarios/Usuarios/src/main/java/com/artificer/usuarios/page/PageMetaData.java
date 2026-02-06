@@ -14,7 +14,7 @@ public class PageMetaData {
     private long totalElements;
     private int totalPages;
 
-    public static PageMetaData brandNewPage(Page page) {
+    public static <T> PageMetaData brandNewPage(Page<T> page) {
         return new PageMetaData(
                 page.getSize(),
                 page.getNumber(),

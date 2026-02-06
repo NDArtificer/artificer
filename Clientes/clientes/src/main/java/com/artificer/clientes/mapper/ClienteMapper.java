@@ -4,7 +4,6 @@ import com.artificer.clientes.api.model.input.ClienteInput;
 import com.artificer.clientes.api.model.output.ClientOutput;
 import com.artificer.clientes.domain.model.Cliente;
 import com.artificer.clientes.domain.model.TipoCliente;
-import jakarta.validation.Valid;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

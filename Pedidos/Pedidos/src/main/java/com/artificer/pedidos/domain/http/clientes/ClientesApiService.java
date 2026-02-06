@@ -1,7 +1,6 @@
 package com.artificer.pedidos.domain.http.clientes;
 
 import com.artificer.pedidos.domain.exception.ClienteNaoEncontradoException;
-import com.artificer.pedidos.domain.exception.NegocioException;
 import com.artificer.pedidos.domain.model.Cliente;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
